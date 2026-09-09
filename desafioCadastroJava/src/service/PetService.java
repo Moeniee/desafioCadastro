@@ -1,8 +1,6 @@
 package service;
 
-import exception.NomeInvalidoException;
-import exception.SexoInvalidoException;
-import exception.TipoInvalidoException;
+import exception.*;
 import model.Constantes;
 import model.Endereco;
 import model.SexoPet;
@@ -69,5 +67,58 @@ public class PetService {
         String rua = sc.nextLine().trim();
 
         return new Endereco(numero, cidade, rua);
+    }
+
+    public double lerPeso(String pergunta){
+        System.out.println(pergunta);
+        String resposta = sc.nextLine().trim();
+
+        if(resposta.isEmpty()){
+            return Constantes.PESO_NAO_INFORMADO;
+        }
+
+        resposta = resposta.replace(",", ".");
+
+        if(!resposta.matches("\\d+(\\.\\d+)?")){
+            throw new PesoInvalidoException("Peso invalido! Digite apenas numeros.");
+        }
+
+        double peso = Double.parseDouble(resposta);
+
+        if(peso < 0.5 || peso > 60){
+            throw new PesoInvalidoException("Peso deve estar entre 0.5kg e 60kg.");
+        }
+
+        return peso;
+    }
+
+    public double lerIdade(String pergunta){
+        System.out.println(pergunta + " (se for menor de 1 ano, digite em meses, ex: '6 meses')");
+        String resposta = sc.nextLine().trim();
+
+        if (resposta.isEmpty()){
+            return Constantes.IDADE_NAO_INFORMADA;
+        }
+
+        resposta = resposta.replace(",", ".");
+
+        boolean emMeses = resposta.toLowerCase().endsWith("meses");
+
+        String parteNumerica = emMeses
+                ? resposta.toLowerCase().replace("meses", "").trim()
+                : resposta;
+
+        if (!parteNumerica.matches("\\d+(\\.\\d+)")){
+            throw new IdadeInvalidaException("Idade invalida! Digite apenas numeros (ou 'X meses').");
+        }
+
+        double valor = Double.parseDouble(parteNumerica);
+        double idadeEmAnos = emMeses ? valor/12.0 : valor;
+
+        if (idadeEmAnos > 20){
+            throw new IdadeInvalidaException("Idade nao pode ser maior que 20 anos.");
+        }
+
+        return idadeEmAnos;
     }
 }
