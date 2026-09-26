@@ -1,16 +1,22 @@
 package service;
 
 import exception.*;
-import model.Constantes;
-import model.Endereco;
-import model.SexoPet;
-import model.TipoPet;
+import model.*;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.List;
 import java.util.Scanner;
+import java.util.function.Supplier;
 
 public class PetService {
 
-    private Scanner sc = new Scanner(System.in);
+    private final Scanner sc;
+
+    public PetService(Scanner sc) {
+        this.sc = sc;
+    }
 
     public String lerNomeCompleto(String pergunta){
         System.out.println(pergunta);
@@ -95,6 +101,7 @@ public class PetService {
     public double lerIdade(String pergunta){
         System.out.println(pergunta + " (se for menor de 1 ano, digite em meses, ex: '6 meses')");
         String resposta = sc.nextLine().trim();
+        System.out.println("DEBUG -> resposta recebida: [" + resposta + "]");
 
         if (resposta.isEmpty()){
             return Constantes.IDADE_NAO_INFORMADA;
@@ -108,7 +115,7 @@ public class PetService {
                 ? resposta.toLowerCase().replace("meses", "").trim()
                 : resposta;
 
-        if (!parteNumerica.matches("\\d+(\\.\\d+)")){
+        if (!parteNumerica.matches("\\d+(\\.\\d+)?")){
             throw new IdadeInvalidaException("Idade invalida! Digite apenas numeros (ou 'X meses').");
         }
 
@@ -120,5 +127,51 @@ public class PetService {
         }
 
         return idadeEmAnos;
+    }
+
+    public String lerRaca(String pergunta){
+        System.out.println(pergunta);
+        String resposta = sc.nextLine().trim();
+
+        if(resposta.isEmpty()){
+            return Constantes.NAO_INFORMADO;
+        }
+
+        if(!resposta.matches("[a-zA-ZÀ-ÿ ]+")){
+            throw new RacaInvalidaException("A raça não pode conter números ou caracteres especiais.");
+        }
+        return resposta;
+    }
+
+    public Pet cadastrarPet(){
+        List<String> perguntas;
+        try {
+            perguntas = Files.readAllLines(Paths.get("formulario.txt"));
+        }catch (IOException e){
+            System.out.println("Erro ao ler formulario.txt: " + e.getMessage());
+            return null;
+        }
+
+        String nome = tentarNovamente(() -> lerNomeCompleto(perguntas.get(0)));
+        TipoPet tipo = tentarNovamente(() -> lerTipo(perguntas.get(1)));
+        SexoPet sexo = tentarNovamente(() -> lerSexo(perguntas.get(2)));
+        Endereco endereco = lerEndereco();
+        double idade = tentarNovamente(() -> lerIdade(perguntas.get(4)));
+        double peso = tentarNovamente(() -> lerPeso(perguntas.get(5)));
+        String raca = tentarNovamente(() -> lerRaca(perguntas.get(6)));
+
+        Pet pet = new Pet(nome, tipo, sexo, endereco, idade, peso, raca);
+        System.out.println("Pet cadastrado com sucesso!");
+        return pet;
+    }
+
+    private <T> T tentarNovamente(java.util.function.Supplier<T> leitor) {
+        while (true) {
+            try {
+                return leitor.get();
+            }catch (RuntimeException e){
+                System.out.println(e.getMessage() + "Tente novamente.");
+            }
+        }
     }
 }
