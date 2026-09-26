@@ -1,9 +1,11 @@
 import model.Pet;
+import repository.PetRepository;
 import service.PetService;
 
 void main() {
     Scanner sc = new Scanner(System.in);
-    PetService petService = new PetService(sc);
+    PetRepository petRepository = new PetRepository();
+    PetService petService = new PetService(sc, petRepository);
 
     try{
         List<String> perguntas = Files.readAllLines(Path.of("formulario.txt"));
@@ -20,12 +22,7 @@ void main() {
         int opcao = lerOpcao(sc);
 
         switch (opcao){
-            case 1 -> {
-                Pet pet = petService.cadastrarPet();
-                if (pet != null){
-                    petService.salvarPet(pet);
-                }
-            }
+            case 1 -> petService.cadastrarPet();
             case 2 -> System.out.println("Alterar pet cadastrado");
             case 3 -> System.out.println("Deletar pet cadastrado");
             case 4 -> System.out.println("Listar todos os pets");

@@ -2,6 +2,7 @@ package service;
 
 import exception.*;
 import model.*;
+import repository.PetRepository;
 
 import java.io.File;
 import java.io.IOException;
@@ -18,9 +19,11 @@ import java.util.function.Supplier;
 public class PetService {
 
     private final Scanner sc;
+    private final PetRepository repository;
 
-    public PetService(Scanner sc) {
+    public PetService(Scanner sc,  PetRepository repository) {
         this.sc = sc;
+        this.repository = repository;
     }
 
     public String lerNomeCompleto(String pergunta){
@@ -165,6 +168,7 @@ public class PetService {
         String raca = tentarNovamente(() -> lerRaca(perguntas.get(6)));
 
         Pet pet = new Pet(nome, tipo, sexo, endereco, idade, peso, raca);
+        repository.salvar(pet);
         System.out.println("Pet cadastrado com sucesso!");
         return pet;
     }
