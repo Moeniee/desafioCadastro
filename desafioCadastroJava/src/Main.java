@@ -23,7 +23,7 @@ void main() {
             case 1 -> {
                 Pet pet = petService.cadastrarPet();
                 if (pet != null){
-                    System.out.println("Pet: " + pet.getNomeCompleto());
+                    petService.salvarPet(pet);
                 }
             }
             case 2 -> System.out.println("Alterar pet cadastrado");

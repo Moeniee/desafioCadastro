@@ -3,9 +3,14 @@ package service;
 import exception.*;
 import model.*;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Scanner;
 import java.util.function.Supplier;
@@ -101,7 +106,6 @@ public class PetService {
     public double lerIdade(String pergunta){
         System.out.println(pergunta + " (se for menor de 1 ano, digite em meses, ex: '6 meses')");
         String resposta = sc.nextLine().trim();
-        System.out.println("DEBUG -> resposta recebida: [" + resposta + "]");
 
         if (resposta.isEmpty()){
             return Constantes.IDADE_NAO_INFORMADA;
@@ -173,5 +177,71 @@ public class PetService {
                 System.out.println(e.getMessage() + "Tente novamente.");
             }
         }
+    }
+
+    private String gerarNomeArquivo(Pet pet) {
+        LocalDateTime agora = LocalDateTime.now();
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyyMMdd'T'HHmm");
+        String dataHora = agora.format(dtf);
+
+        String nomeSemEscapacos = pet.getNomeCompleto()
+                .toUpperCase()
+                .replace(" ", "");
+
+        return dataHora + "-" + nomeSemEscapacos + ".TXT";
+    }
+
+    public void salvarPet(Pet pet){
+        try {
+            Path pasta = Path.of("petsCadastrados");
+            if(!Files.exists(pasta)){
+                Files.createDirectory(pasta);
+            }
+
+            String nomeArquivo = gerarNomeArquivo(pet);
+            Path caminhoArquivo = pasta.resolve(nomeArquivo);
+
+            List<String> linhas = List.of(
+                    "1 - " + pet.getNomeCompleto(),
+                    "2 - " + formatarTipo(pet.getTipo()),
+                    "3 - " + formatarSexo(pet.getSexo()),
+                    "4 - " + pet.getEndereco().toString(),
+                    "5 - " + formatarIdade(pet.getIdade()),
+                    "6 - " + formatarPeso(pet.getPeso()),
+                    "7 - " + pet.getRaca()
+            );
+
+            Files.write(caminhoArquivo, linhas, StandardOpenOption.CREATE);
+
+            System.out.println("Pet salvo em: " + caminhoArquivo.toAbsolutePath());
+        }catch (IOException e){
+            System.out.println("Erro ao salvar pet: " + e.getMessage());
+        }
+    }
+
+    private String formatarTipo(TipoPet tipo){
+        return tipo == TipoPet.CACHORRO ? "Cachorro" : "Gato";
+    }
+
+    private String formatarSexo(SexoPet sexo){
+        return sexo == SexoPet.MACHO ? "Macho" : "Femea";
+    }
+
+    private String formatarIdade(double idade){
+        if (idade == Constantes.IDADE_NAO_INFORMADA){
+            return Constantes.NAO_INFORMADO;
+        }
+        if (idade < 1){
+            int meses = (int) Math.round(idade * 12);
+            return meses + " meses";
+        }
+        return idade + " anos";
+    }
+
+    private String formatarPeso(double peso){
+        if (peso == Constantes.PESO_NAO_INFORMADO){
+            return Constantes.NAO_INFORMADO;
+        }
+        return peso + " kg";
     }
 }
