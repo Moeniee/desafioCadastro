@@ -1,6 +1,7 @@
 package repository;
 
 import model.*;
+import util.FormatadorUtil;
 
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
@@ -26,11 +27,11 @@ public class PetRepository {
 
             List<String> linhas = List.of(
                     "1 - " + pet.getNomeCompleto(),
-                    "2 - " + formatarTipo(pet.getTipo()),
-                    "3 - " + formatarSexo(pet.getSexo()),
+                    "2 - " + FormatadorUtil.formatarTipo(pet.getTipo()),
+                    "3 - " + FormatadorUtil.formatarSexo(pet.getSexo()),
                     "4 - " + pet.getEndereco().toString(),
-                    "5 - " + formatarIdade(pet.getIdade()),
-                    "6 - " + formatarPeso(pet.getPeso()),
+                    "5 - " + FormatadorUtil.formatarIdade(pet.getIdade()),
+                    "6 - " + FormatadorUtil.formatarPeso(pet.getPeso()),
                     "7 - " + pet.getRaca()
             );
 
@@ -94,32 +95,6 @@ public class PetRepository {
         String dataHora = agora.format(dtf);
         String nomeSemEspacos = pet.getNomeCompleto().toUpperCase().replace(" ", "");
         return dataHora + "-" + nomeSemEspacos + ".TXT";
-    }
-
-    private String formatarTipo(TipoPet tipo){
-        return tipo == TipoPet.CACHORRO ? "Cachorro" : "Gato";
-    }
-
-    private String formatarSexo(SexoPet sexo){
-        return sexo == SexoPet.MACHO ? "Macho" : "Femea";
-    }
-
-    private String formatarIdade(double idade){
-        if (idade == Constantes.IDADE_NAO_INFORMADA){
-            return Constantes.NAO_INFORMADO;
-        }
-        if (idade < 1){
-            int meses = (int) Math.round(idade * 12);
-            return meses + " meses";
-        }
-        return idade + " anos";
-    }
-
-    private String formatarPeso(double peso){
-        if (peso == Constantes.PESO_NAO_INFORMADO){
-            return Constantes.NAO_INFORMADO;
-        }
-        return peso + " kg";
     }
 
     private String extrairValor(String linha){

@@ -3,6 +3,7 @@ package service;
 import exception.*;
 import model.*;
 import repository.PetRepository;
+import util.FormatadorUtil;
 import util.TextoUtil;
 
 import java.io.File;
@@ -346,23 +347,13 @@ public class PetService {
             System.out.printf("%d. %s - %s - %s - %s - %s - %s%n",
                     i + 1,
                     p.getNomeCompleto(),
-                    p.getTipo() == TipoPet.CACHORRO ? "Cachorro" : "Gato",
-                    p.getSexo() == SexoPet.MACHO ? "Macho" : "Femea",
+                    FormatadorUtil.formatarTipo(p.getTipo()),
+                    FormatadorUtil.formatarSexo(p.getSexo()),
                     p.getEndereco().toString(),
-                    formatarIdadeExibicao(p.getIdade()),
-                    formatarPesoExibicao(p.getPeso()),
+                    FormatadorUtil.formatarIdade(p.getIdade()),
+                    FormatadorUtil.formatarPeso(p.getPeso()),
                     p.getRaca()
             );
         }
-    }
-
-    private String formatarIdadeExibicao(double idade){
-        if (idade == Constantes.IDADE_NAO_INFORMADA) return Constantes.NAO_INFORMADO;
-        return idade + " anos";
-    }
-
-    private String formatarPesoExibicao(double peso){
-        if (peso == Constantes.PESO_NAO_INFORMADO) return Constantes.NAO_INFORMADO;
-        return peso + " kg";
     }
 }
