@@ -29,7 +29,8 @@ void main() {
             case 4 -> System.out.println("Listar todos os pets");
             case 5 -> {
                 CriterioBusca criterio = petService.montarCriterioBusca();
-                System.out.println("Criterio montado! Tipo: " + criterio.getTipo());
+                List<Pet> resultados = petService.buscarPets(criterio);
+                petService.exibirResultados(resultados);
             }
             case 6 -> {
                 System.out.println("Encerrando o sistema...");

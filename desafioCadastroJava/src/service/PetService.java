@@ -3,6 +3,7 @@ package service;
 import exception.*;
 import model.*;
 import repository.PetRepository;
+import util.TextoUtil;
 
 import java.io.File;
 import java.io.IOException;
@@ -12,9 +13,12 @@ import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 import java.util.function.Supplier;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 public class PetService {
 
@@ -312,5 +316,53 @@ public class PetService {
     private String lerTextoLivre(String pergunta){
         System.out.println(pergunta);
         return sc.nextLine().trim();
+    }
+
+    public List<Pet> buscarPets(CriterioBusca criterio){
+        List<Pet> todos = repository.listarTodos();
+
+        return todos.stream()
+                .filter(pet -> pet.getTipo() == criterio.getTipo())
+                .filter(pet -> criterio.getNome() == null ||
+                        TextoUtil.normalizar(pet.getNomeCompleto()).contains(TextoUtil.normalizar(criterio.getNome())))
+                .filter(pet -> criterio.getSexo() == null || pet.getSexo() == criterio.getSexo())
+                .filter(pet -> criterio.getIdade() == null || pet.getIdade() == criterio.getIdade())
+                .filter(pet -> criterio.getPeso() == null || pet.getPeso() == criterio.getPeso())
+                .filter(pet -> criterio.getRaca() == null ||
+                        TextoUtil.normalizar(pet.getRaca()).contains(TextoUtil.normalizar(criterio.getRaca())))
+                .filter(pet -> criterio.getEndereco() == null ||
+                        TextoUtil.normalizar(pet.getEndereco().toString()).contains(TextoUtil.normalizar(criterio.getEndereco())))
+                .collect(Collectors.toList());
+    }
+
+    public void exibirResultados(List<Pet> pets){
+        if (pets.isEmpty()){
+            System.out.println("Nenhum pet encontrado com esses criterios.");
+            return;
+        }
+
+        for (int i = 0; i< pets.size(); i++){
+            Pet p = pets.get(i);
+            System.out.printf("%d. %s - %s - %s - %s - %s - %s%n",
+                    i + 1,
+                    p.getNomeCompleto(),
+                    p.getTipo() == TipoPet.CACHORRO ? "Cachorro" : "Gato",
+                    p.getSexo() == SexoPet.MACHO ? "Macho" : "Femea",
+                    p.getEndereco().toString(),
+                    formatarIdadeExibicao(p.getIdade()),
+                    formatarPesoExibicao(p.getPeso()),
+                    p.getRaca()
+            );
+        }
+    }
+
+    private String formatarIdadeExibicao(double idade){
+        if (idade == Constantes.IDADE_NAO_INFORMADA) return Constantes.NAO_INFORMADO;
+        return idade + " anos";
+    }
+
+    private String formatarPesoExibicao(double peso){
+        if (peso == Constantes.PESO_NAO_INFORMADO) return Constantes.NAO_INFORMADO;
+        return peso + " kg";
     }
 }
