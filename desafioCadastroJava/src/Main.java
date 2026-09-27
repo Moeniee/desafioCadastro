@@ -26,7 +26,10 @@ void main() {
             case 1 -> petService.cadastrarPet();
             case 2 -> System.out.println("Alterar pet cadastrado");
             case 3 -> System.out.println("Deletar pet cadastrado");
-            case 4 -> System.out.println("Listar todos os pets");
+            case 4 -> {
+                List<Pet> todos = petRepository.listarTodos();
+                petService.exibirResultados(todos);
+            }
             case 5 -> {
                 CriterioBusca criterio = petService.montarCriterioBusca();
                 List<Pet> resultados = petService.buscarPets(criterio);
