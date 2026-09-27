@@ -1,3 +1,4 @@
+import model.CriterioBusca;
 import model.Pet;
 import repository.PetRepository;
 import service.PetService;
@@ -26,7 +27,10 @@ void main() {
             case 2 -> System.out.println("Alterar pet cadastrado");
             case 3 -> System.out.println("Deletar pet cadastrado");
             case 4 -> System.out.println("Listar todos os pets");
-            case 5 -> System.out.println("Listar pets por criterio");
+            case 5 -> {
+                CriterioBusca criterio = petService.montarCriterioBusca();
+                System.out.println("Criterio montado! Tipo: " + criterio.getTipo());
+            }
             case 6 -> {
                 System.out.println("Encerrando o sistema...");
                 continuar = false;

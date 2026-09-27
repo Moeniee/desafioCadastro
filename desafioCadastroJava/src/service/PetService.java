@@ -248,4 +248,69 @@ public class PetService {
         }
         return peso + " kg";
     }
+
+    public CriterioBusca montarCriterioBusca(){
+        CriterioBusca criterio = new CriterioBusca();
+
+        TipoPet tipo = tentarNovamente(() -> lerTipo("Qual o tipo de pet que voce procura?"));
+        criterio.setTipo(tipo);
+
+        exibirMenuCriteriosExtras(criterio);
+
+        return criterio;
+    }
+
+    private void exibirMenuCriteriosExtras(CriterioBusca criterio){
+        int escolhidos = 0;
+
+        while (escolhidos < 2){
+            System.out.println("\nDeseja filtrar por mais algum criterio? (0 - Nao, seguir com a busca)");
+            System.out.println("1 - Nome");
+            System.out.println("2 - Sexo");
+            System.out.println("3 - Idade");
+            System.out.println("4 - Peso");
+            System.out.println("5 - Raca");
+            System.out.println("6 - Endereco");
+            System.out.println("Escolha uma opcao: ");
+
+            String entrada = sc.nextLine().trim();
+
+            if (entrada.equals("0")){
+                break;
+            }
+
+            switch (entrada){
+                case "1" -> {
+                    criterio.setNome(tentarNovamente(() -> lerTextoLivre("Busca por qual nome (ou parte dele)?")));
+                    escolhidos++;
+                }
+                case "2" -> {
+                    criterio.setSexo(tentarNovamente(() -> lerSexo("Qual o sexo?")));
+                    escolhidos++;
+                }
+                case "3" -> {
+                    criterio.setIdade(tentarNovamente(() -> lerIdade("Qual a idade?")));
+                    escolhidos++;
+                }
+                case "4" -> {
+                    criterio.setPeso(tentarNovamente(() -> lerPeso("Qual o peso?")));
+                    escolhidos++;
+                }
+                case "5" -> {
+                    criterio.setRaca(tentarNovamente(() -> lerTextoLivre("Qual a raca?")));
+                    escolhidos++;
+                }
+                case "6" -> {
+                    criterio.setEndereco(tentarNovamente(() -> lerTextoLivre("Buscar por qual parte do endereco?")));
+                    escolhidos++;
+                }
+                default -> System.out.println("Opcao invalida!");
+            }
+        }
+    }
+
+    private String lerTextoLivre(String pergunta){
+        System.out.println(pergunta);
+        return sc.nextLine().trim();
+    }
 }
