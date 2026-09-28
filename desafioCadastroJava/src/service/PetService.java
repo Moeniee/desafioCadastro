@@ -319,31 +319,31 @@ public class PetService {
         return sc.nextLine().trim();
     }
 
-    public List<Pet> buscarPets(CriterioBusca criterio){
-        List<Pet> todos = repository.listarTodos();
+    public List<PetArquivo> buscarPets(CriterioBusca criterio){
+        List<PetArquivo> todos = repository.listarTodos();
 
         return todos.stream()
-                .filter(pet -> pet.getTipo() == criterio.getTipo())
-                .filter(pet -> criterio.getNome() == null ||
-                        TextoUtil.normalizar(pet.getNomeCompleto()).contains(TextoUtil.normalizar(criterio.getNome())))
-                .filter(pet -> criterio.getSexo() == null || pet.getSexo() == criterio.getSexo())
-                .filter(pet -> criterio.getIdade() == null || pet.getIdade() == criterio.getIdade())
-                .filter(pet -> criterio.getPeso() == null || pet.getPeso() == criterio.getPeso())
-                .filter(pet -> criterio.getRaca() == null ||
-                        TextoUtil.normalizar(pet.getRaca()).contains(TextoUtil.normalizar(criterio.getRaca())))
-                .filter(pet -> criterio.getEndereco() == null ||
-                        TextoUtil.normalizar(pet.getEndereco().toString()).contains(TextoUtil.normalizar(criterio.getEndereco())))
+                .filter(pa -> pa.getPet().getTipo() == criterio.getTipo())
+                .filter(pa -> criterio.getNome() == null ||
+                        TextoUtil.normalizar(pa.getPet().getNomeCompleto()).contains(TextoUtil.normalizar(criterio.getNome())))
+                .filter(pa -> criterio.getSexo() == null || pa.getPet().getSexo() == criterio.getSexo())
+                .filter(pa -> criterio.getIdade() == null || pa.getPet().getIdade() == criterio.getIdade())
+                .filter(pa -> criterio.getPeso() == null || pa.getPet().getPeso() == criterio.getPeso())
+                .filter(pa -> criterio.getRaca() == null ||
+                        TextoUtil.normalizar(pa.getPet().getRaca()).contains(TextoUtil.normalizar(criterio.getRaca())))
+                .filter(pa -> criterio.getEndereco() == null ||
+                        TextoUtil.normalizar(pa.getPet().getEndereco().toString()).contains(TextoUtil.normalizar(criterio.getEndereco())))
                 .collect(Collectors.toList());
     }
 
-    public void exibirResultados(List<Pet> pets){
-        if (pets.isEmpty()){
+    public void exibirResultados(List<PetArquivo> resultados){
+        if (resultados.isEmpty()){
             System.out.println("Nenhum pet encontrado com esses criterios.");
             return;
         }
 
-        for (int i = 0; i< pets.size(); i++){
-            Pet p = pets.get(i);
+        for (int i = 0; i< resultados.size(); i++){
+            Pet p = resultados.get(i).getPet();
             System.out.printf("%d. %s - %s - %s - %s - %s - %s%n",
                     i + 1,
                     p.getNomeCompleto(),

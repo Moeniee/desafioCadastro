@@ -1,5 +1,5 @@
 import model.CriterioBusca;
-import model.Pet;
+import model.PetArquivo;
 import repository.PetRepository;
 import service.PetService;
 
@@ -27,12 +27,12 @@ void main() {
             case 2 -> System.out.println("Alterar pet cadastrado");
             case 3 -> System.out.println("Deletar pet cadastrado");
             case 4 -> {
-                List<Pet> todos = petRepository.listarTodos();
+                List<PetArquivo> todos = petRepository.listarTodos();
                 petService.exibirResultados(todos);
             }
             case 5 -> {
                 CriterioBusca criterio = petService.montarCriterioBusca();
-                List<Pet> resultados = petService.buscarPets(criterio);
+                List<PetArquivo> resultados = petService.buscarPets(criterio);
                 petService.exibirResultados(resultados);
             }
             case 6 -> {

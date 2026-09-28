@@ -42,8 +42,8 @@ public class PetRepository {
         }
     }
 
-    public List<Pet> listarTodos() {
-        List<Pet> pets = new ArrayList<>();
+    public List<PetArquivo> listarTodos() {
+        List<PetArquivo> pets = new ArrayList<>();
 
         if (!Files.exists(PASTA)) {
             return pets;
@@ -54,10 +54,10 @@ public class PetRepository {
                 try {
                     Pet pet = lerPetDoArquivo(arquivo);
                     if (pet != null) {
-                        pets.add(pet);
+                        pets.add(new PetArquivo(pet, arquivo));
                     }
                 }catch (RuntimeException e){
-                    System.out.println("Arquivo ignorado (formato invalido): " + e.getMessage());
+                    System.out.println("Arquivo ignorado (formato invalido): " + arquivo.getFileName() + " ->" + e.getMessage());
                 }
             }
         }catch (Exception e) {
