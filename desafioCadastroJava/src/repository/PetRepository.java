@@ -56,6 +56,15 @@ public class PetRepository {
         }
     }
 
+    public void deletar(PetArquivo petArquivo){
+        try {
+            Files.delete(petArquivo.getArquivoOrigem());
+            System.out.println("Pet deletado com sucesso!");
+        }catch (Exception e) {
+            System.out.println("Erro ao deletar o pet: " + e.getMessage());
+        }
+    }
+
     public List<PetArquivo> listarTodos() {
         List<PetArquivo> pets = new ArrayList<>();
 

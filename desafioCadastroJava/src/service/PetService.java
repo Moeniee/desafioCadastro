@@ -419,4 +419,20 @@ public class PetService {
         }
         repository.atualizar(escolhido, pet);
     }
+
+    public void deletarPet(){
+        PetArquivo escolhido = escolherPet("deletar");
+        if (escolhido == null){
+            return;
+        }
+
+        System.out.print("Tem certeza que deseja deletar " + escolhido.getPet().getNomeCompleto() + "? (SIM/NAO)");
+        String confirmacao = sc.nextLine().trim();
+
+        if (confirmacao.equalsIgnoreCase("SIM")) {
+            repository.deletar(escolhido);
+        }else {
+            System.out.println("Exclusao cancelada!");
+        }
+    }
 }
