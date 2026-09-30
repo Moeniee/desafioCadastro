@@ -1,7 +1,7 @@
 1 - Gato teste
 2 - Gato
 3 - Femea
-4 - teste, 33-t, teste
-5 - 6 meses
-6 - 6.7 kg
+4 - 67, 67, 67
+5 - 0 meses
+6 - 6.7kg
 7 - teste

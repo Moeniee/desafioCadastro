@@ -356,4 +356,67 @@ public class PetService {
             );
         }
     }
+
+    private PetArquivo escolherPet(String acao){
+        while (true){
+            CriterioBusca criterio = montarCriterioBusca();
+            List<PetArquivo> resultados = buscarPets(criterio);
+
+            if (resultados.isEmpty()){
+                System.out.println("Nenhum pet encontrado com esses criterios.");
+                return null;
+            }
+
+            exibirResultados(resultados);
+            System.out.println("Digite o numero do pet que deseja buscar: " + acao + (" (0 para cancelar)"));
+            String entrada = sc.nextLine().trim();
+
+            if (entrada.equals("0")){
+                return null;
+            }
+
+            if (entrada.matches("\\d{1,9}")){
+                int numero = Integer.parseInt(entrada);
+                if (numero >= 1 && numero <= resultados.size()){
+                    return resultados.get(numero - 1);
+                }
+            }
+
+            System.out.println("Numero invalido! Refazendo busca...");
+        }
+    }
+
+    public void alterarPet(){
+        PetArquivo escolhido = escolherPet("alterar");
+        if (escolhido == null){
+            return;
+        }
+
+        Pet pet = escolhido.getPet();
+        boolean alterando = true;
+
+        while (alterando){
+            System.out.println("\nO que deseja alterar? (tipo e sexo nao podem ser alterados)");
+            System.out.println("1 - Nome");
+            System.out.println("2 - Endereco");
+            System.out.println("3 - Idade");
+            System.out.println("4 - Peso");
+            System.out.println("5 - Raca");
+            System.out.println("0 - Salvar e voltar ao menu");
+            System.out.println("Escolha uma opcao: ");
+
+            String opcao = sc.nextLine().trim();
+
+            switch (opcao) {
+                case "1" -> pet.setNomeCompleto(tentarNovamente(() -> lerNomeCompleto("Qual o novo nome e sobrenome?")));
+                case "2" -> pet.setEndereco(lerEndereco());
+                case "3" -> pet.setIdade(tentarNovamente(() -> lerIdade("Qual a nova idade?")));
+                case "4" -> pet.setPeso(tentarNovamente(() -> lerPeso("Qual o novo peso?")));
+                case "5" -> pet.setRaca(tentarNovamente(() -> lerRaca("Qual a nova raca?")));
+                case "0" -> alterando = false;
+                default -> System.out.println("Opcao invalida!");
+            }
+        }
+        repository.atualizar(escolhido, pet);
+    }
 }

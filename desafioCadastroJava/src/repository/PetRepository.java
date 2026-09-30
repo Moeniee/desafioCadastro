@@ -3,6 +3,7 @@ package repository;
 import model.*;
 import util.FormatadorUtil;
 
+import java.io.IOException;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -25,20 +26,33 @@ public class PetRepository {
             String nomeArquivo = gerarNomeArquivo(pet);
             Path caminhoArquivo = PASTA.resolve(nomeArquivo);
 
-            List<String> linhas = List.of(
-                    "1 - " + pet.getNomeCompleto(),
-                    "2 - " + FormatadorUtil.formatarTipo(pet.getTipo()),
-                    "3 - " + FormatadorUtil.formatarSexo(pet.getSexo()),
-                    "4 - " + pet.getEndereco().toString(),
-                    "5 - " + FormatadorUtil.formatarIdade(pet.getIdade()),
-                    "6 - " + FormatadorUtil.formatarPeso(pet.getPeso()),
-                    "7 - " + pet.getRaca()
-            );
+            List<String> linhas = montarLinhas(pet);
 
             Files.write(caminhoArquivo, linhas, StandardOpenOption.CREATE);
             System.out.println("Pet salvo em: " + caminhoArquivo.toAbsolutePath());
         }catch (Exception e) {
             System.out.println("Erro ao salvar o pet: " + e.getMessage());
+        }
+    }
+
+    public void atualizar(PetArquivo original, Pet petAtualizado){
+        try {
+            Path antigo = original.getArquivoOrigem();
+
+            Files.write(antigo, montarLinhas(petAtualizado));
+
+            String prefixoData = antigo.getFileName().toString().substring(0, 13);
+            String nomeNovo = prefixoData + "-"
+                    + petAtualizado.getNomeCompleto().toUpperCase().replace(" ","") + ".TXT";
+            Path novo = PASTA.resolve(nomeNovo);
+
+            if (!novo.equals(antigo)){
+                Files.move(antigo, novo);
+            }
+
+            System.out.println("Pet atualizado com sucesso!");
+        } catch (IOException e) {
+            System.out.println("Erro ao atualizar o pet: " + e.getMessage());
         }
     }
 
@@ -126,5 +140,17 @@ public class PetRepository {
             return Constantes.PESO_NAO_INFORMADO;
         }
         return Double.parseDouble(texto.replace("kg", "").trim());
+    }
+
+    private List<String> montarLinhas(Pet pet) {
+        return List.of(
+                "1 - " + pet.getNomeCompleto(),
+                "2 - " + FormatadorUtil.formatarTipo(pet.getTipo()),
+                "3 - " + FormatadorUtil.formatarSexo(pet.getSexo()),
+                "4 - " + pet.getEndereco().toString(),
+                "5 - " + FormatadorUtil.formatarIdade(pet.getIdade()),
+                "6 - " + FormatadorUtil.formatarPeso(pet.getPeso()),
+                "7 - " + pet.getRaca()
+        );
     }
 }

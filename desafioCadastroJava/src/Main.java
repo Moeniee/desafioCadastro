@@ -24,7 +24,7 @@ void main() {
 
         switch (opcao){
             case 1 -> petService.cadastrarPet();
-            case 2 -> System.out.println("Alterar pet cadastrado");
+            case 2 -> petService.alterarPet();
             case 3 -> System.out.println("Deletar pet cadastrado");
             case 4 -> {
                 List<PetArquivo> todos = petRepository.listarTodos();
