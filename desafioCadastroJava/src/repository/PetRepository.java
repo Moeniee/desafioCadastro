@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class PetRepository {
 
@@ -152,7 +153,7 @@ public class PetRepository {
     }
 
     private List<String> montarLinhas(Pet pet) {
-        return List.of(
+        List<String> linhas = new ArrayList<>(List.of(
                 "1 - " + pet.getNomeCompleto(),
                 "2 - " + FormatadorUtil.formatarTipo(pet.getTipo()),
                 "3 - " + FormatadorUtil.formatarSexo(pet.getSexo()),
@@ -160,6 +161,13 @@ public class PetRepository {
                 "5 - " + FormatadorUtil.formatarIdade(pet.getIdade()),
                 "6 - " + FormatadorUtil.formatarPeso(pet.getPeso()),
                 "7 - " + pet.getRaca()
-        );
+        ));
+
+        int numero = 8;
+        for (Map.Entry<String, String> entrada : pet.getRespostasExtras().entrySet()){
+            linhas.add(numero + " - [EXTRA - " + entrada.getKey() + "] - " + entrada.getValue());
+            numero++;
+        }
+        return linhas;
     }
 }

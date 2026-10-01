@@ -1,5 +1,8 @@
 package model;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 public class Pet {
     private String nomeCompleto;
     private TipoPet tipo;
@@ -8,6 +11,7 @@ public class Pet {
     private double idade;
     private double peso;
     private String raca;
+    private Map<String, String> respostasExtras = new LinkedHashMap<>();
 
     public Pet(String nomeCompleto, TipoPet tipo, SexoPet sexo, Endereco endereco, double idade, double peso, String raca) {
         this.nomeCompleto = nomeCompleto;
@@ -65,5 +69,13 @@ public class Pet {
 
     public void setRaca(String raca) {
         this.raca = raca;
+    }
+
+    public Map<String, String> getRespostasExtras() {
+        return respostasExtras;
+    }
+
+    public void adicionarRespostaExtra(String pergunta, String resposta){
+        respostasExtras.put(pergunta, resposta);
     }
 }

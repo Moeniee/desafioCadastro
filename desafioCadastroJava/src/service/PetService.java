@@ -173,9 +173,27 @@ public class PetService {
         String raca = tentarNovamente(() -> lerRaca(perguntas.get(6)));
 
         Pet pet = new Pet(nome, tipo, sexo, endereco, idade, peso, raca);
+
+        for (int i = 7; i < perguntas.size(); i++){
+            String textoPergunta = extraiTextoPergunta(perguntas.get(i));
+            System.out.println(textoPergunta);
+            String resposta = sc.nextLine().trim();
+
+            if (resposta.isEmpty()){
+                resposta = Constantes.NAO_INFORMADO;
+            }
+
+            pet.adicionarRespostaExtra(textoPergunta, resposta);
+        }
+
         repository.salvar(pet);
         System.out.println("Pet cadastrado com sucesso!");
         return pet;
+    }
+
+    private String extraiTextoPergunta(String linha){
+        int indiceHifen = linha.indexOf(" - ");
+        return linha.substring(indiceHifen + 3).trim();
     }
 
     private <T> T tentarNovamente(java.util.function.Supplier<T> leitor) {
@@ -198,34 +216,6 @@ public class PetService {
                 .replace(" ", "");
 
         return dataHora + "-" + nomeSemEscapacos + ".TXT";
-    }
-
-    public void salvarPet(Pet pet){
-        try {
-            Path pasta = Path.of("petsCadastrados");
-            if(!Files.exists(pasta)){
-                Files.createDirectory(pasta);
-            }
-
-            String nomeArquivo = gerarNomeArquivo(pet);
-            Path caminhoArquivo = pasta.resolve(nomeArquivo);
-
-            List<String> linhas = List.of(
-                    "1 - " + pet.getNomeCompleto(),
-                    "2 - " + formatarTipo(pet.getTipo()),
-                    "3 - " + formatarSexo(pet.getSexo()),
-                    "4 - " + pet.getEndereco().toString(),
-                    "5 - " + formatarIdade(pet.getIdade()),
-                    "6 - " + formatarPeso(pet.getPeso()),
-                    "7 - " + pet.getRaca()
-            );
-
-            Files.write(caminhoArquivo, linhas, StandardOpenOption.CREATE);
-
-            System.out.println("Pet salvo em: " + caminhoArquivo.toAbsolutePath());
-        }catch (IOException e){
-            System.out.println("Erro ao salvar pet: " + e.getMessage());
-        }
     }
 
     private String formatarTipo(TipoPet tipo){
