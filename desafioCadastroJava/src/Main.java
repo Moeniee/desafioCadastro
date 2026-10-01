@@ -1,45 +1,28 @@
 import model.CriterioBusca;
 import model.PetArquivo;
 import repository.PetRepository;
+import service.FormularioService;
 import service.PetService;
 
 void main() {
     Scanner sc = new Scanner(System.in);
     PetRepository petRepository = new PetRepository();
     PetService petService = new PetService(sc, petRepository);
-
-    try{
-        List<String> perguntas = Files.readAllLines(Path.of("formulario.txt"));
-        for (String pergunta : perguntas){
-            System.out.println(pergunta);
-        }
-    } catch (IOException e) {
-        System.out.println("Error ao ler o arquivo formulario.txt: " + e.getMessage());
-    }
+    FormularioService formularioService = new FormularioService(sc);
 
     boolean continuar = true;
-    while (continuar){
-        exibirMenu();
+    while (continuar) {
+        exibirMenuInicial();
         int opcao = lerOpcao(sc);
 
-        switch (opcao){
-            case 1 -> petService.cadastrarPet();
-            case 2 -> petService.alterarPet();
-            case 3 -> petService.deletarPet();
-            case 4 -> {
-                List<PetArquivo> todos = petRepository.listarTodos();
-                petService.exibirResultados(todos);
-            }
-            case 5 -> {
-                CriterioBusca criterio = petService.montarCriterioBusca();
-                List<PetArquivo> resultados = petService.buscarPets(criterio);
-                petService.exibirResultados(resultados);
-            }
-            case 6 -> {
+        switch (opcao) {
+            case 1 -> menuPets(sc, petService, petRepository);
+            case 2 -> menuFormulario(sc, formularioService);
+            case 3 -> {
                 System.out.println("Encerrando o sistema...");
                 continuar = false;
             }
-            default -> System.out.println("Opcao invalida! Tente novamente.");
+            default -> System.out.println("Opcao invalida! Tente novamente!");
         }
     }
     sc.close();
@@ -53,6 +36,14 @@ private static void exibirMenu(){
     System.out.println("5 - Listar pets por algum criterio");
     System.out.println("6 - Sair");
     System.out.print("Escolha uma opcao: ");
+}
+
+private static void exibirMenuInicial() {
+    System.out.println("\n===== SISTEMA DE CADASTROS =====");
+    System.out.println("1 - Iniciar o sistema para cadastro de PETS");
+    System.out.println("2 - Iniciar o sistema para alterar formulário");
+    System.out.println("3 - Sair");
+    System.out.print("Escolha uma opção: ");
 }
 
 private static int lerOpcao(Scanner sc){
@@ -70,4 +61,56 @@ private static int lerOpcao(Scanner sc){
         return -1;
     }
     return opcao;
+}
+
+private static void menuPets(Scanner sc, PetService petService, PetRepository petRepository){
+    boolean voltar = false;
+    while (!voltar){
+        exibirMenu();
+        int opcao = lerOpcao(sc);
+
+        switch (opcao){
+            case 1 -> petService.cadastrarPet();
+            case 2 -> petService.alterarPet();
+            case 3 -> petService.deletarPet();
+            case 4 -> {
+                List<PetArquivo> todos = petRepository.listarTodos();
+                petService.exibirResultados(todos);
+            }
+            case 5 -> {
+                CriterioBusca criterio = petService.montarCriterioBusca();
+                List<PetArquivo> resultados = petService.buscarPets(criterio);
+                petService.exibirResultados(resultados);
+            }
+            case 6 -> voltar = true;
+            default -> System.out.println("Opcao invalida! Tente novamente.");
+        }
+    }
+}
+
+private static void menuFormulario(Scanner sc, FormularioService formularioService){
+    boolean voltar = false;
+    while (!voltar){
+        System.out.println("\n====== GERENCIAR FORMULARIO ======");
+        System.out.println("1 - Criar nova pergunta");
+        System.out.println("2 - Alterar pergunta existente");
+        System.out.println("3 - Excluir pergunta existente");
+        System.out.println("4 - Voltar para o menu inicial");
+        System.out.println("5 - Sair");
+        System.out.print("Escolha uma opcao: ");
+
+        int opcao = lerOpcao(sc);
+
+        switch (opcao){
+            case 1 -> formularioService.criarPergunta();
+            case 2 -> formularioService.alterarPergunta();
+            case 3 -> formularioService.excluirPergunta();
+            case 4 -> voltar = true;
+            case 5 -> {
+                System.out.println("Encerrando o sistema...");
+                System.exit(0);
+            }
+            default -> System.out.println("Opcao invalida! Tente novamente.");
+        }
+    }
 }

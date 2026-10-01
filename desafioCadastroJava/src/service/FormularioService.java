@@ -109,14 +109,14 @@ public class FormularioService {
         int numero = Integer.parseInt(entrada);
 
         if (numero <= QUANTIDADE_PERGUNTAS_ORIGINAIS || numero > perguntas.size()){
-            System.out.println("Voce so pode excluir perguntas extras (numero maior que " + QUANTIDADE_PERGUNTAS_ORIGINAIS);
+            System.out.println("Voce so pode excluir perguntas extras (numero maior que " + QUANTIDADE_PERGUNTAS_ORIGINAIS + ")");
             return;
         }
 
         System.out.print("Confirma a exclusao da pergunta " + numero + "? (SIM/NAO)");
         String confirmacao = sc.nextLine().trim();
 
-        if(confirmacao.equalsIgnoreCase("SIM")){
+        if(!confirmacao.equalsIgnoreCase("SIM")){
             System.out.println("Exclusao cancelada.");
             return;
         }
