@@ -17,7 +17,12 @@ void main() {
 
         switch (opcao) {
             case 1 -> menuPets(sc, petService, petRepository);
-            case 2 -> menuFormulario(sc, formularioService);
+            case 2 -> {
+                boolean sair = menuFormulario(sc, formularioService);
+                if (sair) {
+                    continuar = false;
+                }
+            }
             case 3 -> {
                 System.out.println("Encerrando o sistema...");
                 continuar = false;
@@ -88,9 +93,8 @@ private static void menuPets(Scanner sc, PetService petService, PetRepository pe
     }
 }
 
-private static void menuFormulario(Scanner sc, FormularioService formularioService){
-    boolean voltar = false;
-    while (!voltar){
+private static boolean menuFormulario(Scanner sc, FormularioService formularioService){
+    while (true){
         System.out.println("\n====== GERENCIAR FORMULARIO ======");
         System.out.println("1 - Criar nova pergunta");
         System.out.println("2 - Alterar pergunta existente");
@@ -105,10 +109,12 @@ private static void menuFormulario(Scanner sc, FormularioService formularioServi
             case 1 -> formularioService.criarPergunta();
             case 2 -> formularioService.alterarPergunta();
             case 3 -> formularioService.excluirPergunta();
-            case 4 -> voltar = true;
+            case 4 -> {
+                return false;
+            }
             case 5 -> {
                 System.out.println("Encerrando o sistema...");
-                System.exit(0);
+                return true;
             }
             default -> System.out.println("Opcao invalida! Tente novamente.");
         }
