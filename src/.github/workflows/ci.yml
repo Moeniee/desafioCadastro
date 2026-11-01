@@ -1,0 +1,88 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  build-test-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '25'
+          cache: maven
+
+      - name: Build e testes
+        run: mvn -B verify
+
+      - name: Trivy - dependências e segredos
+        uses: aquasecurity/trivy-action@57a97c7e7821a5776cebc9bb87c984fa69cba8f1 # v0.35.0
+        with:
+          scan-type: fs
+          scan-ref: .
+          severity: HIGH,CRITICAL
+          ignore-unfixed: true
+          exit-code: '1'
+
+      - name: Build da imagem
+        run: docker build -t sistema-cadastro-pets:ci .
+
+      - name: Trivy - imagem Docker
+        uses: aquasecurity/trivy-action@57a97c7e7821a5776cebc9bb87c984fa69cba8f1 # v0.35.0
+        with:
+          image-ref: sistema-cadastro-pets:ci
+          severity: HIGH,CRITICAL
+          ignore-unfixed: true
+          exit-code: '1'
+
+      - name: Teste de fumaça
+        run: |
+          saida=$(printf '3\n' | docker run --rm -i sistema-cadastro-pets:ci)
+          echo "$saida"
+          echo "$saida" | grep -q "Encerrando o sistema"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: jar
+          path: target/sistema-cadastro-pets-1.0.0.jar
+
+  publish:
+    needs: build-test-scan
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: jar
+          path: target
+
+      - name: Publicar no GHCR
+        env:
+          ACTOR: ${{ github.actor }}
+          OWNER: ${{ github.repository_owner }}
+          TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SHA: ${{ github.sha }}
+        run: |
+          owner=$(echo "$OWNER" | tr '[:upper:]' '[:lower:]')
+          imagem="ghcr.io/$owner/sistema-cadastro-pets"
+          echo "$TOKEN" | docker login ghcr.io -u "$ACTOR" --password-stdin
+          docker build -t "$imagem:latest" -t "$imagem:$SHA" .
+          docker push "$imagem:latest"
+          docker push "$imagem:$SHA"
